@@ -1,1 +1,2 @@
 # Reversi-Bot
+CPU‚ÆƒŠƒo[ƒV‚Å‘Îí‚Å‚«‚éBOT
