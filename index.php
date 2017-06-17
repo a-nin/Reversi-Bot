@@ -38,8 +38,48 @@ foreach ($events as $event) {
     error_log('Non text message has come');
     continue;
   }
-  // オウム返し
-  $bot->replyText($event->getReplyToken(), $event->getText());
+
+  // ゲーム開始時の石の配置
+  $stones =
+  [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 1, 2, 0, 0, 0],
+    [0, 0, 0, 2, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+
+  // Imagemapを返信
+  replyImageMap($bot, $event->getReplyToken(), '盤面', $stones);
+
+
+
+  // 盤面のImagemapを返信
+  function replyImageMap($bot, $replyToken, $alternativeText, $stones) {
+    // アクションの配列
+    $actionArray = array();
+    // 1つ以上のエリアが必要なためダミーのタップ可能エリアを追加
+    array_push($actionArray, new \LINE\LINEBot\ImagemapActionBuilder\ImagemapMessageActionBuilder(
+      '-',
+      new LINE\LINEBot\ImagemapActionBuilder\AreaBuilder(0, 0, 1, 1)));
+
+    // ImagemapMessageBuilderの引数は画像のURL、代替テキスト
+    // 基本比率サイズ（幅は1040固定）、アクションの配列
+    $ImagemapMessageBuilder = \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder(
+      'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones)) . '/' . uniqid(),
+      $alternativeText,
+      new LINE\LINEBot\MessageBuilder\Imagemap\BaseSizeBuilder(1040, 1040),
+      $actionArray
+    );
+
+    $response = $bot->replyMessage($replyToken, $ImagemapMessageBuilder);
+    if(!response->isSucceeded()) {
+      error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+    }
+  }
 }
 
 // テキストを返信。引数はLINEBot、返信先、テキスト
