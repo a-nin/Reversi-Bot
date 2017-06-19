@@ -31,5 +31,17 @@ for($i = 0; $i < count($stones); $i++) {
     }
   }
 }
+// リクエストされているサイズを取得
+$size = $_REQUEST['size'];
+// ベースサイズと同じなら何もしない
+if($size == GD_BASE_SIZE) {
+  $out =$destinationImage;
+// 違うサイズの場合
+} else {
+  $out = imagecreatettruecolor($size ,$size);
+  // リサイズしながら合成
+  imagecopyresampled($out, $destinationImage, 0, 0, 0, 0, $size, $size, GO_BASE_SIZE, GO_BASE_SIZE);
+}
+
 
  ?>
