@@ -19,7 +19,7 @@ for($i = 0; $i < count($stones); $i++) {
     // 現在の石を生成
     if($row[$j] == 1) {
       $stoneImage = imagecreatefrompng('imgs/reversi_stone_white.png');
-    } else if($row[$j] == 2) {
+    } elseif($row[$j] == 2) {
       $stoneImage = imagecreatefrompng('imgs/reversi_stone_black.png');
     }
     // 合成
@@ -38,7 +38,7 @@ if($size == GD_BASE_SIZE) {
   $out =$destinationImage;
 // 違うサイズの場合
 } else {
-  $out = imagecreatettruecolor($size ,$size);
+  $out = imagecreatetruecolor($size ,$size);
   // リサイズしながら合成
   imagecopyresampled($out, $destinationImage, 0, 0, 0, 0, $size, $size, GO_BASE_SIZE, GO_BASE_SIZE);
 }
