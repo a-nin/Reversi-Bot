@@ -76,7 +76,7 @@ foreach ($events as $event) {
     );
 
     $response = $bot->replyMessage($replyToken, $ImagemapMessageBuilder);
-    if(!response->isSucceeded()) {
+    if(!$response->isSucceeded()) {
       error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
     }
   }
