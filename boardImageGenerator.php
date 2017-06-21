@@ -42,6 +42,18 @@ if($size == GD_BASE_SIZE) {
   // リサイズしながら合成
   imagecopyresampled($out, $destinationImage, 0, 0, 0, 0, $size, $size, GO_BASE_SIZE, GO_BASE_SIZE);
 }
+// 出力のバッファリングを有効に
+ob_start();
+// バッファに出力
+imagepng($out, null, 9);
+// バッファから画像を取得
+$content = ob_get_contents();
+// バッファを消去し出力のバッファリングをオフ
+ob_end_clean();
+
+// 出力のタイプを指定
+header('Content-type: image/png');
+echo $content;
 
 
  ?>
