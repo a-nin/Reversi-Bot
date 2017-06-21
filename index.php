@@ -53,12 +53,12 @@ foreach ($events as $event) {
   ];
 
   // Imagemapを返信
-  replyImageMap($bot, $event->getReplyToken(), '盤面', $stones);
+  replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 
 
 
   // 盤面のImagemapを返信
-  function replyImageMap($bot, $replyToken, $alternativeText, $stones) {
+  function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
     // アクションの配列
     $actionArray = array();
     // 1つ以上のエリアが必要なためダミーのタップ可能エリアを追加
