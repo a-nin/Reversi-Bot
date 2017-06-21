@@ -20,7 +20,7 @@ for($i = 0; $i < count($stones); $i++) {
     if($row[$j] == 1) {
       $stoneImage = imagecreatefrompng('imgs/reversi_stone_white.png');
     } else if($row[$j] == 2) {
-      $stoneImage = imagecreatefrompng('imgs/reversi_stone_black.png')
+      $stoneImage = imagecreatefrompng('imgs/reversi_stone_black.png');
     }
     // 合成
     if($row[$j] > 0) {
