@@ -65,6 +65,7 @@ foreach ($events as $event) {
   }
   replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 }
+}
 
 // ユーザーをデータベースに登録する
 function registerUser($userId, $stones) {
