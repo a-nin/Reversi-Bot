@@ -282,7 +282,7 @@ function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
     // 石が置かれていない、かつ
     // そこに置くと相手の石が１つでもひっくり返る場合
     for($j = 0; $j < 8; $j++) {
-      if($stones[$i][$j] == 0 && getFlipCountByPsAndColor($stones, $i, $j, true) > 0) {
+      if($stones[$i][$j] == 0 && getFlipCountByPosAndColor($stones, $i, $j, true) > 0) {
         // タップ可能エリアとアクションを作成し配列に追加
         array_push($actionArray, new LINE\LINEBot\ImagemapActionBuilder\ImagemapMessageActionBuilder(
           '[' . ($i + 1) . ',' . ($j + 1) . ']',
