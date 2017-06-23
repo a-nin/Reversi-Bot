@@ -60,29 +60,7 @@ foreach ($events as $event) {
 
 }
 
-// 盤面のImagemapを返信
-function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
-  // アクションの配列
-  $actionArray = array();
-  // 1つ以上のエリアが必要なためダミーのタップ可能エリアを追加
-  array_push($actionArray, new \LINE\LINEBot\ImagemapActionBuilder\ImagemapMessageActionBuilder(
-    '-',
-    new LINE\LINEBot\ImagemapActionBuilder\AreaBuilder(0, 0, 1, 1)));
 
-  // ImagemapMessageBuilderの引数は画像のURL、代替テキスト
-  // 基本比率サイズ（幅は1040固定）、アクションの配列
-  $ImagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder(
-    'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones)) . '/' . uniqid(),
-    $alternativeText,
-    new LINE\LINEBot\MessageBuilder\Imagemap\BaseSizeBuilder(1040, 1040),
-    $actionArray
-  );
-
-  $response = $bot->replyMessage($replyToken, $ImagemapMessageBuilder);
-  if(!$response->isSucceeded()) {
-    error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
-  }
-}
 
 // テキストを返信。引数はLINEBot、返信先、テキスト
 function replyTextMessage($bot, $replyToken, $text) {
@@ -211,6 +189,37 @@ function replyCarouselTemplate($bot, $replyToken, $alternativeText, $columnArray
   $response = $bot->replyMessage($replyToken, $builder);
   if (!$response->isSucceeded()) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
+  }
+}
+
+// データベースへの接続を管理するクラス
+class dbConnection {
+  // インスタンス
+  protected static $db;
+  // コンストラクタ
+  private function __construct() {
+
+    try {
+      // 環境変数からデータベースへの接続情報を取得
+      $url = parse_url(getenv('DATABASE_URL'));
+      // データソース
+      $dsn = sprintf('pgsql:host=%s;dbname=%s', $url['host'], substr($url['path'], 1));
+      // 接続を確立
+      self::$db = new PDO($dsn, $url['user'], $url['pass']);
+      // エラー時例外を投げるように設定
+      self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    }
+    catch (PDOExcepton $e) {
+      echo 'Connection Error: ' . $e->getMessage();
+    }
+  }
+
+  // シングルトン、存在しない場合のみインスタンス化
+  public static function getConnection(){
+    if (!self::$db) {
+      new dbConnection();
+    }
+    return self::$db;
   }
 }
 
