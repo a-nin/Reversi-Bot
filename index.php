@@ -78,7 +78,7 @@ function registerUser($userId, $stones) {
 
 // ユーザーIDをもとにデータベースから情報を取得
 function getStonesByUserId($userId) {
-  $dbh = dbConnetion::getConnection();
+  $dbh = dbConnection::getConnection();
   $sql = 'select stone from '. TABLE_NAME_STONES . ' where ? =
                                 pgp_symdecrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
   $sth = $dbh->prepare($sql);
