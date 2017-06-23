@@ -80,7 +80,7 @@ function registerUser($userId, $stones) {
 function getStonesByUserId($userId) {
   $dbh = dbConnection::getConnection();
   $sql = 'select stone from '. TABLE_NAME_STONES . ' where ? =
-                                pgp_symdecrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
+                                pgp_sym_decrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
   $sth = $dbh->prepare($sql);
   $sth->execute(array($userId));
   // レコードが存在しなければNULL
