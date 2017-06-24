@@ -69,7 +69,7 @@ foreach ($events as $event) {
   // ユーザーの石を置く
   placeStone($stones, $tappedArea[0] - 1, $tappedArea[1] - 1, true);
   // ユーザーの情報を更新
-  updateUser($event->getUserId(), json_encode($stones]));
+  updateUser($event->getUserId(), json_encode($stones));
   replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 }
 
