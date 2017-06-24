@@ -63,6 +63,8 @@ foreach ($events as $event) {
     // データベースから現在の石の配置を取得
     $stones = getStonesByUserId($event->getUserId());
   }
+  // 入力sレ田テキストを[行,列]の配列に変換
+  $tappedArea = json_decode($event->getText());
   replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 }
 
