@@ -183,7 +183,7 @@ function placeStone(&$stones, $row, $col, $isWhite) {
         }
         break;
       } elseif ($stones[$row + $rowDiff * $cnt][$col + $colDiff *$cnt] == 0) {
-        flipCount = 0;
+        $flipCount = 0;
         break;
       }
       $cnt++;
