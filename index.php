@@ -65,6 +65,11 @@ foreach ($events as $event) {
   }
   // 入力sレ田テキストを[行,列]の配列に変換
   $tappedArea = json_decode($event->getText());
+
+  // ユーザーの石を置く
+  placeStone($stones, $tappedArea[0] - 1, $tappedArea[1] - 1, true);
+  // ユーザーの情報を更新
+  updateUser($event->getUserId(), json_encode($stones]));
   replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 }
 
@@ -76,6 +81,15 @@ function registerUser($userId, $stones) {
                                 (pgp_sym_encrypt(?, \'' . getenv('DB_ENCRYPT_PASS') . '\'), ?) ';
   $sth = $dbh->prepare($sql);
   $sth->execute(array($userId, $stones));
+}
+
+// ユーザーの情報を更新
+function updateUser($userId, $stones) {
+  $dbh = dbConnection::getConnection();
+  $sql = 'update ' . TABLE_NAME_STONES . ' set stone = ? where ? =
+                                pgp_sym_decrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
+  $sth = $dbh->prepare($sql);
+  $sth->execute(array($stones, $userId));
 }
 
 // ユーザーIDをもとにデータベースから情報を取得
