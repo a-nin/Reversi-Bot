@@ -193,6 +193,27 @@ function placeStone(&$stones, $row, $col, $isWhite) {
   $stones[$row][$col] = ($isWhite ? 1 : 2);
 }
 
+// 敵kの石を置く
+function placeAIStone(&$stones) {
+  // 強い場所の配列。強い順
+  $strongArray = [0, 7, 56, 63, 2, 5, 16, 18, 21, 23, 40, 42, 45, 47, 58, 61];
+  // 弱い場所の配列。強い順
+  $weakArray = [1, 6, 8, 15, 48, 57, 62, 9, 14, 49, 54];
+
+  // どちらにも属さない場所の配列
+  $otherArray = [];
+  for ($i = 0; $i < count($stones) * count($stones[0]); $i++) {
+    if (!in_array($i, $strongArray) && !in_array($i, $weakArray)) {
+      array_push($otherArray, $i);
+    }
+  }
+  // ランダム性を持たせるためシャッフル
+  shuffle($otherArray);
+
+  // すべてのマスの強い+普通+弱い順の配列
+  $posArray = array_merge($strongArray, $otherArray, $weakArray);
+}
+
 // テキストを返信。引数はLINEBot、返信先、テキスト
 function replyTextMessage($bot, $replyToken, $text) {
   // 返信を行いレスポンスを取得
