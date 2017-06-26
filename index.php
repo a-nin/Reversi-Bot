@@ -218,7 +218,7 @@ function placeAIStone(&$stones) {
 
   // １つずつそこに置けるかチェックし、可能なら置いて処理を終える
   for ($i = 0; $i < count($posArray); ++$i) {
-    $pos = [$posArray[$i] / 8, $posArray[i] % 8];
+    $pos = [$posArray[$i] / 8, $posArray[$i] % 8];
     if ($stones[$pos[0]][$pos[1]] == 0) {
       if (getFlipCountByPosAndColor($stones, $pos[0], $pos[1], false) > 0) {
         placeStone($stones, $pos[0], $pos[1], false);
