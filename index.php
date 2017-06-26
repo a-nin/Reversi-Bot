@@ -111,6 +111,69 @@ function getStonesByUserId($userId) {
   }
 }
 
+// ゲームオーバー
+function endGame($bot, $replyToken, $userId, $stones) {
+  // それぞれの石の数をカウント
+  $white = 0;
+  $black = 0;
+  for ($i = 0; $i < count($stones); $i++) {
+    for ($j = 0; $j < count($stones[$i]); $j++) {
+      if($stones[$i][$j] == 1) {
+        $white++;
+      } else if($stones[$i][$j] == 2) {
+        $black++;
+      }
+    }
+  }
+
+  // 送るテキスト
+  if($white == $black) {
+    $message = '引き分けでござる･･･！' . sprintf(' 白 : %d、黒 : %d', $white, $black);
+  } else {
+    $message = ($white > $black ? 'おぬし' : 'わし(CPU)') . 'の勝ちでござる！' . sprintf(' 白 : %d、黒 : %d', $white, $black);
+  }
+
+  // 盤面とダミーエリアのみのImagemapを生成
+  $actionArray = array();
+  array_push($actionArray, new LINE\LINEBot\ImagemapActionBuilder\ImagemapMessageActionBuilder(
+    '-',
+    new LINE\LINEBot\ImagemapActionBuilder\AreaBuilder(0, 0, 1, 1)));
+
+  $ImagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder (
+    'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones) . '/' . uniqid()),
+    $message,
+    new LINE\LINEBot\MessageBuilder\Imagemap\BaseSizeBuilder(1040, 1040),
+    $actionArray
+  );
+
+  // テキストのメッセージ
+  $TextMessage = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+
+  // スタンプのメッセージ
+  $stickerMessage = ($white >= $black)
+   ? new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114);
+   : new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 111);
+
+   // Imagemap、テキスト、スタンプを返信
+   replyMultiMessage($bot, $replyToken, $ImagemapMessageBuilder, $TextMessage, $stickerMessage);
+}
+
+// 石が置ける場所があるかを調べる
+// 引数は現在の石の配置。石の色
+function getCanPlaceByColor($stones, $isWhite) {
+  for ($i = 0; $i < count($stones); $i++) {
+    for ($j = 0; $j <count($stones[$i]); $j++) {
+      if ($stones[$i][$j] == 0) {
+        // １つでもひっくり返るなら真
+        if (getFlipCountByPosAndColor($stones, $i, $j, $isWhite) > 0) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 // そこに置くと相手の石が何個ひっくり返るかを返す
 // 引数は現在の配置、行、列、石の色
 function getFlipCountByPosAndColor($stones, $row, $col, $isWhite)
