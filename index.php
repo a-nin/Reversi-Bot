@@ -68,6 +68,9 @@ foreach ($events as $event) {
 
   // ユーザーの石を置く
   placeStone($stones, $tappedArea[0] - 1, $tappedArea[1] - 1, true);
+
+  // 相手の石を置く
+  placeAIStone($stones);
   // ユーザーの情報を更新
   updateUser($event->getUserId(), json_encode($stones));
   replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
@@ -212,6 +215,17 @@ function placeAIStone(&$stones) {
 
   // すべてのマスの強い+普通+弱い順の配列
   $posArray = array_merge($strongArray, $otherArray, $weakArray);
+
+  // １つずつそこに置けるかチェックし、可能なら置いて処理を終える
+  for ($i = 0; $i < count($posArray); ++$i) {
+    $pos = [$posArray[$i] / 8, $posArray[i] % 8];
+    if ($stones[$pos[0]][$pos[1]] == 0) {
+      if (getFlipCountByPosAndColor($stones, $pos[0], $pos[1], false) > 0) {
+        placeStone($stones, $pos[0], $pos[1], false);
+        break;
+      }
+    }
+  }
 }
 
 // テキストを返信。引数はLINEBot、返信先、テキスト
