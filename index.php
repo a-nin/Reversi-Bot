@@ -178,7 +178,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
 
   // スタンプのメッセージ
   $stickerMessage = ($white >= $black)
-   ? new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114);
+   ? new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114)
    : new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 111);
 
    // データベースからユーザーを削除
