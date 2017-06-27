@@ -40,7 +40,7 @@ if($size == GD_BASE_SIZE) {
 } else {
   $out = imagecreatetruecolor($size ,$size);
   // リサイズしながら合成
-  imagecopyresampled($out, $destinationImage, 0, 0, 0, 0, $size, $size, GO_BASE_SIZE, GO_BASE_SIZE);
+  imagecopyresampled($out, $destinationImage, 0, 0, 0, 0, $size, $size, GD_BASE_SIZE, GD_BASE_SIZE);
 }
 // 出力のバッファリングを有効に
 ob_start();
