@@ -166,7 +166,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
     '-',
     new LINE\LINEBot\ImagemapActionBuilder\AreaBuilder(0, 0, 1, 1)));
 
-  $ImagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder (
+  $imagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder (
     'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones) . '/' . uniqid()),
     $message,
     new LINE\LINEBot\MessageBuilder\Imagemap\BaseSizeBuilder(1040, 1040),
@@ -174,7 +174,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
   );
 
   // テキストのメッセージ
-  $TextMessage = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+  $textMessage = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
 
   // スタンプのメッセージ
   $stickerMessage = ($white >= $black)
@@ -192,7 +192,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
 // 引数は現在の石の配置。石の色
 function getCanPlaceByColor($stones, $isWhite) {
   for ($i = 0; $i < count($stones); $i++) {
-    for ($j = 0; $j <count($stones[$i]); $j++) {
+    for ($j = 0; $j < count($stones[$i]); $j++) {
       if ($stones[$i][$j] == 0) {
         // １つでもひっくり返るなら真
         if (getFlipCountByPosAndColor($stones, $i, $j, $isWhite) > 0) {
