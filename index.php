@@ -63,7 +63,7 @@ foreach ($events as $event) {
     // データベースから現在の石の配置を取得
     $stones = getStonesByUserId($event->getUserId());
   }
-  // 入力sレ田テキストを[行,列]の配列に変換
+  // 入力されたテキストを[行,列]の配列に変換
   $tappedArea = json_decode($event->getText());
 
   // ユーザーの石を置く
@@ -73,6 +73,25 @@ foreach ($events as $event) {
   placeAIStone($stones);
   // ユーザーの情報を更新
   updateUser($event->getUserId(), json_encode($stones));
+
+  // ユーザーも相手も石を置くことが出来ないとき
+  if(!getCanPlaceByColor($stones, true) && !getCanPlaceByColor($stones, false)) {
+    // ゲームオーバー
+    endGame($bot, $event->getReplyToken(), $event->getUserId(), $stones);
+    continue;
+  // 相手のみが置けるとき
+  } else if(!getCanPlaceByColor($stones, true) && getCanPlaceByColor($stones, false)) {
+    // ユーザーが置けるようになるまで相手が石を置く
+    while(!getCanPlaceByColor($stones, true)) {
+      placeAIStone();
+      updateUser($bot, json_encode($stones));
+      // どちらの石も置けなくなったらゲームオーバー
+      if(!getCanPlaceByColor($stones, true) && !getCanPlaceByColor($stones, false)) {
+        endGame($bot, $event->getReplyToken(), $event->getUserId(), $stones);
+        continue 2;
+      }
+    }
+  }
   replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
 }
 
@@ -93,6 +112,14 @@ function updateUser($userId, $stones) {
                                 pgp_sym_decrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
   $sth = $dbh->prepare($sql);
   $sth->execute(array($stones, $userId));
+}
+
+// ユーザーの情報をデータベースから削除
+function deleteUser($userId) {
+  $dbh = dbConnection::getConnection();
+  $sql = 'delete FROM ' . TABLE_NAME_STONES . ' where ? = pgp_sym_decrypt(userid, \'' . getenv('DB_ENCRYPT_PASS') . '\')';
+  $sth = $dbh->prepare($sql);
+  $flag = $sth->execute(array($userId));
 }
 
 // ユーザーIDをもとにデータベースから情報を取得
@@ -153,6 +180,9 @@ function endGame($bot, $replyToken, $userId, $stones) {
   $stickerMessage = ($white >= $black)
    ? new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 114);
    : new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(1, 111);
+
+   // データベースからユーザーを削除
+   deleteUser($userId);
 
    // Imagemap、テキスト、スタンプを返信
    replyMultiMessage($bot, $replyToken, $ImagemapMessageBuilder, $TextMessage, $stickerMessage);
