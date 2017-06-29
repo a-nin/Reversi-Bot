@@ -155,7 +155,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
 
   // 送るテキスト
   if($white == $black) {
-    $message = '引き分けでござる･･･！' . sprintf(' 白 : %d、黒 : %d', $white, $black);
+    $message = '引き分けでござる･･･！' . sprintf(' 白 : %d、黒 %d', $white, $black);
   } else {
     $message = ($white > $black ? 'おぬし' : 'わし(CPU)') . 'の勝ちでござる！' . sprintf(' 白 : %d、黒 : %d', $white, $black);
   }
@@ -268,7 +268,7 @@ function placeStone(&$stones, $row, $col, $isWhite) {
         $flipCount = 0;
         break;
       }
-      if ($stones[$row + $rowDiff * $cnt][$col + $colDiff * $cnt] == ($isWhite ? 2: 1)) {
+      if ($stones[$row + $rowDiff * $cnt][$col + $colDiff * $cnt] == ($isWhite ? 2 : 1)) {
         $flipCount++;
       } elseif ($stones[$row + $rowDiff *$cnt][$col + $colDiff *$cnt] == ($isWhite ? 1 : 2)) {
         if ($flipCount > 0) {
