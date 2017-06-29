@@ -185,7 +185,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
    deleteUser($userId);
 
    // Imagemap、テキスト、スタンプを返信
-   replyMultiMessage($bot, $replyToken, $ImagemapMessageBuilder, $TextMessage, $stickerMessage);
+   replyMultiMessage($bot, $replyToken, $ImagemapMessageBuilder, $textMessage, $stickerMessage);
 }
 
 // 石が置ける場所があるかを調べる
