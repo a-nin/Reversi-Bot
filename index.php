@@ -185,7 +185,7 @@ function endGame($bot, $replyToken, $userId, $stones) {
    deleteUser($userId);
 
    // Imagemap、テキスト、スタンプを返信
-   replyMultiMessage($bot, $replyToken, $ImagemapMessageBuilder, $textMessage, $stickerMessage);
+   replyMultiMessage($bot, $replyToken, $imagemapMessageBuilder, $textMessage, $stickerMessage);
 }
 
 // 石が置ける場所があるかを調べる
@@ -278,7 +278,7 @@ function placeStone(&$stones, $row, $col, $isWhite) {
           }
         }
         break;
-      } elseif ($stones[$row + $rowDiff * $cnt][$col + $colDiff *$cnt] == 0) {
+      } elseif ($stones[$row + $rowDiff * $cnt][$col + $colDiff * $cnt] == 0) {
         $flipCount = 0;
         break;
       }
@@ -289,7 +289,7 @@ function placeStone(&$stones, $row, $col, $isWhite) {
   $stones[$row][$col] = ($isWhite ? 1 : 2);
 }
 
-// 敵kの石を置く
+// 敵の石を置く
 function placeAIStone(&$stones) {
   // 強い場所の配列。強い順
   $strongArray = [0, 7, 56, 63, 2, 5, 16, 18, 21, 23, 40, 42, 45, 47, 58, 61];
@@ -306,10 +306,10 @@ function placeAIStone(&$stones) {
   // ランダム性を持たせるためシャッフル
   shuffle($otherArray);
 
-  // すべてのマスの強い+普通+弱い順の配列
+  // 全てのマスの強い+普通+弱い順の配列
   $posArray = array_merge($strongArray, $otherArray, $weakArray);
 
-  // １つずつそこに置けるかチェックし、可能なら置いて処理を終える
+  // １つずつそこに置けるかをチェックし、可能なら置いて処理を終える
   for ($i = 0; $i < count($posArray); ++$i) {
     $pos = [$posArray[$i] / 8, $posArray[$i] % 8];
     if ($stones[$pos[0]][$pos[1]] == 0) {
@@ -459,7 +459,7 @@ function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
   array_push($actionArray, new \LINE\LINEBot\ImagemapActionBuilder\ImagemapMessageActionBuilder(
     '-',
     new LINE\LINEBot\ImagemapActionBuilder\AreaBuilder(0, 0, 1, 1)));
-  // すべてのマスに対して
+  // 全てのマスに対して
   for($i = 0; $i < 8; $i++) {
     // 石が置かれていない、かつ
     // そこに置くと相手の石が１つでもひっくり返る場合
@@ -475,14 +475,14 @@ function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
 
   // ImagemapMessageBuilderの引数は画像のURL、代替テキスト
   // 基本比率サイズ（幅は1040固定）、アクションの配列
-  $ImagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder(
+  $imagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder(
     'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones)) . '/' . uniqid(),
     $alternativeText,
     new LINE\LINEBot\MessageBuilder\Imagemap\BaseSizeBuilder(1040, 1040),
     $actionArray
   );
 
-  $response = $bot->replyMessage($replyToken, $ImagemapMessageBuilder);
+  $response = $bot->replyMessage($replyToken, $imagemapMessageBuilder);
   if(!$response->isSucceeded()) {
     error_log('Failed!'. $response->getHTTPStatus . ' ' . $response->getRawBody());
   }
@@ -496,14 +496,14 @@ class dbConnection {
   private function __construct() {
 
     try {
-      // 環境変数からデータベースへの接続情報を取得
+      // 環境変数からデータベースへの接続情報を取得し
       $url = parse_url(getenv('DATABASE_URL'));
       // データソース
       $dsn = sprintf('pgsql:host=%s;dbname=%s', $url['host'], substr($url['path'], 1));
       // 接続を確立
       self::$db = new PDO($dsn, $url['user'], $url['pass']);
       // エラー時例外を投げるように設定
-      self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      self::$db->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
     }
     catch (PDOExcepton $e) {
       echo 'Connection Error: ' . $e->getMessage();
