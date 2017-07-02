@@ -45,7 +45,7 @@ foreach ($events as $event) {
     if(substr($event->getText(), 4) == 'check_board') {
       if(getStonesByUserId($event->getUserId()) != PDO::PARAM_NULL) {
         $stones = getStonesByUserId($event->getUserId());
-        replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
+        replyImagemap($bot, $event->getReplyToken(), '盤面', $stones, null);
       }
     // 情勢の確認
     } else if(substr($event->getText(), 4) == 'check_count') {
@@ -79,7 +79,7 @@ foreach ($events as $event) {
         [0, 0, 0, 0, 0, 0, 0, 0],
       ];
       registerUser($event->getUserId(), json_encode($stones));
-      replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
+      replyImagemap($bot, $event->getReplyToken(), '盤面', $stones, null);
     // 遊び方
     } else if(substr($event->getText(), 4) == 'help') {
       replyTextMessage($bot, $event->getReplyToken(),'あなたは常に白番です。送られた盤面上の置きたい場所をタップしてね！バグった時はオプションの盤面再送から！');
@@ -104,13 +104,14 @@ foreach ($events as $event) {
     // ユーザーをデータベースに登録
     registerUser($event->getUserId(), json_encode($stones));
     // Imagemapを返信
-    replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
+    replyImagemap($bot, $event->getReplyToken(), '盤面', $stones, null);
     // 以降の処理をスキップ
     continue;
   // ユーザーの情報がデータベースに存在する時
   } else {
     // データベースから現在の石の配置を取得
     $stones = getStonesByUserId($event->getUserId());
+    $lastStones = $stones;
   }
   // 入力されたテキストを[行,列]の配列に変換
   $tappedArea = json_decode($event->getText());
@@ -141,7 +142,7 @@ foreach ($events as $event) {
       }
     }
   }
-  replyImagemap($bot, $event->getReplyToken(), '盤面', $stones);
+  replyImagemap($bot, $event->getReplyToken(), '盤面', $stones, $lastStones);
 }
 
 
@@ -501,7 +502,7 @@ function replyCarouselTemplate($bot, $replyToken, $alternativeText, $columnArray
 }
 
 // 盤面のImagemapを返信
-function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
+function replyImagemap($bot, $replyToken, $alternativeText, $stones, $lastStones) {
   // アクションの配列
   $actionArray = array();
   // 1つ以上のエリアが必要なためダミーのタップ可能エリアを追加
@@ -525,7 +526,7 @@ function replyImagemap($bot, $replyToken, $alternativeText, $stones) {
   // ImagemapMessageBuilderの引数は画像のURL、代替テキスト
   // 基本比率サイズ（幅は1040固定）、アクションの配列
   $imagemapMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImagemapMessageBuilder(
-    'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones)) . '/' . uniqid(),
+    'https://' . $_SERVER['HTTP_HOST'] . '/images/' . urlencode(json_encode($stones) . '|' . json_encode($lastStones)) . '/' . uniqid(),
     $alternativeText,
     new LINE\LINEBot\MessageBuilder\Imagemap\BaseSizeBuilder(1040, 1040),
     $actionArray
