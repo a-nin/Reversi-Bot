@@ -96,7 +96,7 @@ if($lastStones != null) {
 }
 
 // リクエストされているサイズを取得
-size = $_REQUEST['size'];
+$size = $_REQUEST['size'];
 // ベースサイズと同じなら何もしない
 if($size == GD_BASE_SIZE) {
   $out = $destinationImage;
